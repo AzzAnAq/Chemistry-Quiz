@@ -49,7 +49,6 @@ try:
     print('If chosen name, then symbol is shown and the name is the question')
     print('If chosen random, each question will have the aforemensioned parts randomised')
     question = str(input('What is your choice:'))
-    i=0
     for i in range(0,num_questions):
         ranint = random.randint(min,max)
         ranint = ranint-1 #for list as list begins at zero
