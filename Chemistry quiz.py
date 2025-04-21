@@ -7,14 +7,13 @@ from tkinter import ttk
 #---------------PLAY BUTTON PAGE---------------#
 def openplayb():
     # window details
-    global playb
+    global playb, hangyaboly_14, Enickname, Equestions, Emaxrange, Eminrange,Etopic, continue_button, play_image
     playb = Toplevel(pg)
     playb.title('GAME Options')
     playb.geometry('750x750')
     playb.lift()
     playb.focus_force()
-    #font creation for options entrys 
-    global hangyaboly_14
+    #font creation for options entry
     ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/Hangyaboly.ttf")
     hangyaboly_14 = tkFont.Font(family="hangyaboly", size=14)
     # playb page image
@@ -22,23 +21,19 @@ def openplayb():
     playb_image = Label(playb, image = playb.optionspg, bd=0)
     playb_image.pack()
     # nickname entry
-    global Enickname 
     Enickname = Entry(playb, width = 31, font = hangyaboly_14, borderwidth=0, highlightthickness=0)
     Enickname.place(x=300, y=130.5)
+    Enickname.focus_set()
     # Questions entry
-    global Equestions 
     Equestions = Entry(playb, width = 17, font = hangyaboly_14, borderwidth=0, highlightthickness=0)
     Equestions.place(x=137, y=349.5)
     # Highest Range entry
-    global Emaxrange 
     Emaxrange = Entry(playb, width = 9, font = hangyaboly_14, borderwidth=0, highlightthickness=0)
     Emaxrange.place(x=380, y=349.5)
     # Lowest Range entry
-    global Eminrange 
     Eminrange = Entry(playb, width = 9, font = hangyaboly_14, borderwidth=0, highlightthickness=0)
     Eminrange.place(x=520, y=349.5)
     # Topic entry
-    global Etopic 
     Etopic = Entry(playb, width = 51, font = hangyaboly_14, borderwidth=0, highlightthickness=0)
     Etopic.place(x=112, y=578)
     # Continue button
@@ -52,17 +47,12 @@ def openplayb():
 
     #---------------(continue button)---------------# 
 def b_continue():
-    global num_correct_answers
+    global num_correct_answers, nickname, questions_num, maxrange, minrange, topic
     try:
-        global nickname
         nickname = str(Enickname.get())
-        global questions_num
         questions_num = int(Equestions.get())
-        global maxrange
         maxrange = int(Emaxrange.get()) - 1 #to match the list as it starts from zero and the periodic table begins at one
-        global minrange
         minrange = int(Eminrange.get()) - 1 #same reason as maxrange
-        global topic
         topic = str(Etopic.get())
         playb.destroy() 
         quizpage()
@@ -78,19 +68,19 @@ def show_message():
 #---------------QUIZ PAGE---------------#  
 def quizpage():
     # fonts
-    global CaveatBrush_62
+    global CaveatBrush_62, hangyaboly_20, hangyaboly_30, hangyaboly_90, hangyaboly_150
     ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/CaveatBrush-Regular.ttf")
     CaveatBrush_62 = tkFont.Font(family="Caveat Brush", size=62)
-    global hangyaboly_20
+
     ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/Hangyaboly.ttf")
     hangyaboly_20 = tkFont.Font(family="hangyaboly", size=20)
-    global hangyaboly_30
+
     ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/Hangyaboly.ttf")
     hangyaboly_30 = tkFont.Font(family="hangyaboly", size=30)
-    global hangyaboly_90
+
     ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/Hangyaboly.ttf")
     hangyaboly_90 = tkFont.Font(family="hangyaboly", size=90)
-    global hangyaboly_150
+
     ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/Hangyaboly.ttf")
     hangyaboly_150 = tkFont.Font(family="hangyaboly", size=150)
 
@@ -101,14 +91,13 @@ def quizpage():
 
 
     # window details
-    global quiz
+    global quiz, iteration_count, quizimage_label, start, progressbar,finish, next_button, submit_button, menu_button, L_title, L_question, E_quiz, L_check
     quiz = Toplevel(pg)
     quiz.attributes('-fullscreen', True)
     quiz.title('Questions')
     quiz.lift()
     quiz.focus_force()
     quiz.grab_set()
-    global iteration_count
     iteration_count = 0
     is_answered = False
     # background image
@@ -119,7 +108,6 @@ def quizpage():
     start = Label(quiz, text = 'Start',bg = '#2c5570',borderwidth=0, highlightthickness=0, foreground='#54bfe3', font= hangyaboly_20)
     start. place(relx=0.12, rely=0.198, anchor= 'center')
     # progress bar
-    global progressbar
     progressbar = ttk.Progressbar(quiz,style ="Quiz.Horizontal.TProgressbar", orient= HORIZONTAL, length = 1060, mode= 'determinate')
     progressbar.place(relx=0.5, rely=0.198, anchor= 'center')
     progressbar['value'] = 0
@@ -127,7 +115,6 @@ def quizpage():
     finish = Label(quiz, text = 'Finish',bg = '#2c5570',borderwidth=0, highlightthickness=0, foreground='#54bfe3', font= hangyaboly_20)
     finish. place(relx=0.88, rely=0.198, anchor= 'center')
     # next button 
-    global next_button
     quiz.next_image = PhotoImage(file = r'SOFTWARE_QUIZ/Chemistry-Quiz/Next button.png')
     next_button = Button(quiz, image = quiz.next_image, borderwidth =0, highlightthickness =0, command= iterations )
     next_button.place(relx= 0.875, rely= 0.84, anchor = 'center')
@@ -140,19 +127,16 @@ def quizpage():
     menu_button = Button(quiz, image = quiz.menu_image, borderwidth =0, highlightthickness =0, command= quiz.destroy )
     menu_button.place(relx= 0.12, rely= 0.84, anchor = 'center') 
     # label of tile
-    global L_title
     L_title = Label(quiz, text = f'Question 1',bg = '#2c5570',borderwidth=0, highlightthickness=0, foreground='#54bfe3', font= CaveatBrush_62)
     L_title. place(relx=0.5, rely=0.10, anchor= 'center')
     # question label
-    global L_question
     L_question = Label(quiz, text = "", bg = '#2c5570',borderwidth=0, highlightthickness=0, foreground='#b2ca9a', font= hangyaboly_20)
     L_question.place(relx=0.5, rely=0.59, anchor= 'center')
     #Question entry
-    global E_quiz
     E_quiz = Entry(quiz, width = 25, font = hangyaboly_30, borderwidth=0, highlightthickness=0, justify='center')
     E_quiz.place(relx=0.5, rely=0.69, anchor= 'center')
+    E_quiz.focus_set()
     # label of check (correct/incorrect)
-    global L_check
     L_check = Label(quiz, text = f'', bg = '#2c5570',borderwidth=0, highlightthickness=0, foreground='#b2ca9a', font= hangyaboly_20)
     L_check.place(relx=0.5, rely=0.765, anchor= 'center')
 
@@ -174,11 +158,9 @@ def quizpage():
 def iterations():
     L_check.config(text = '')
     progressbar['value'] = progressbar['value'] + (100/questions_num)
-    global iteration_count
+    global iteration_count, correct_answer, ranint1
     L_title.config(text = f'Questions {iteration_count+1}')
-    global correct_answer
     correct_answer= ''
-    global ranint1
     ranint1 = random.randint(minrange,maxrange)
     if iteration_count + 1 == questions_num:
         quiz.finish_image = PhotoImage(file= r'SOFTWARE_QUIZ/Chemistry-Quiz/Finish button.png')
@@ -210,6 +192,7 @@ def iterations():
     E_quiz.config(foreground='black')
 #---------------PAGE IF NAME IS TOPIC---------------#
 def name_topic():
+    global correct_answer
     frame1 = Frame(quiz)
     frame1.place_forget()
     frame1.place(relx=0.5, rely=0.375, anchor= 'center')
@@ -220,10 +203,10 @@ def name_topic():
     L_symbol = Label(frame1 ,text= Symbol[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
     L_symbol.place(relx=0.5, rely=0.5, anchor= 'center')
     L_question.config(text = questions[0])
-    global correct_answer
     correct_answer= Name[ranint1]
 #---------------PAGE IF SYMBOL IS TOPIC---------------#
 def symbol_topic():
+    global correct_answer
     frame1 = Frame(quiz)
     frame1.place_forget()
     frame1.place(relx=0.5, rely=0.375, anchor= 'center')   
@@ -234,10 +217,10 @@ def symbol_topic():
     L_name = Label(frame1 ,text= Name[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
     L_name.place(relx=0.5, rely=0.5, anchor= 'center')
     L_question.config(text = questions[1])
-    global correct_answer
     correct_answer = Symbol[ranint1]
 #---------------PAGE IF ATOMIC NUM IS TOPIC---------------#
 def atonum_topic():
+    global correct_answer
     frame1 = Frame(quiz)
     frame1.place_forget()
     frame1.place(relx=0.5, rely=0.375, anchor= 'center')
@@ -248,10 +231,10 @@ def atonum_topic():
     L_name = Label(frame1 ,text= Name[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
     L_name.place(relx=0.5, rely=0.5, anchor= 'center')
     L_question.config(text = questions[2])
-    global correct_answer
     correct_answer = ato_num[ranint1]
 #---------------PAGE IF GROUP IS TOPIC---------------#
 def group_topic():
+    global correct_answer
     frame1 = Frame(quiz)
     frame1.place_forget()
     frame1.place(relx=0.5, rely=0.375, anchor= 'center')
@@ -262,10 +245,10 @@ def group_topic():
     L_name = Label(frame1 ,text= Name[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
     L_name.place(relx=0.5, rely=0.5, anchor= 'center')
     L_question.config(text = questions[3])
-    global correct_answer
     correct_answer = groups[ranint1]
 #---------------PAGE IF PERIOD IS TOPIC---------------#
 def period_topic():
+    global correct_answer
     frame1 = Frame(quiz)
     frame1.place_forget()
     frame1.place(relx=0.5, rely=0.375, anchor= 'center')
@@ -276,7 +259,6 @@ def period_topic():
     L_name = Label(frame1 ,text= Name[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
     L_name.place(relx=0.5, rely=0.5, anchor= 'center')
     L_question.config(text = questions[4])
-    global correct_answer
     correct_answer = periods[ranint1]
 
 #---------------SUBMIT BUTTON---------------#
