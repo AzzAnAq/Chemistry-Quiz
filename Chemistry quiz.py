@@ -52,6 +52,7 @@ def openplayb():
 
     #---------------(continue button)---------------# 
 def b_continue():
+    global num_correct_answers
     try:
         global nickname
         nickname = str(Enickname.get())
@@ -68,6 +69,8 @@ def b_continue():
     except Exception as e:
         show_message()
         print(e)
+    
+    num_correct_answers = 0
 #---------------ALL ERROR MESSAGES---------------#
 def show_message(): 
     messagebox.showerror("Oops!", "error")
@@ -86,7 +89,16 @@ def quizpage():
     hangyaboly_30 = tkFont.Font(family="hangyaboly", size=30)
     global hangyaboly_90
     ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/Hangyaboly.ttf")
-    hangyaboly_90 = tkFont.Font(family="hangyaboly", size=150)
+    hangyaboly_90 = tkFont.Font(family="hangyaboly", size=90)
+    global hangyaboly_150
+    ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/Hangyaboly.ttf")
+    hangyaboly_150 = tkFont.Font(family="hangyaboly", size=150)
+
+    #styles
+    quiz_style = ttk.Style()
+    quiz_style.theme_use('default')
+    quiz_style.configure("Quiz.Horizontal.TProgressbar", thickness=20, troughcolor='#2c5570', background='#54bfe3')
+
 
     # window details
     global quiz
@@ -95,9 +107,9 @@ def quizpage():
     quiz.title('Questions')
     quiz.lift()
     quiz.focus_force()
-    quiz.grab_set
+    quiz.grab_set()
     global iteration_count
-    iteration_count = 1
+    iteration_count = 0
     is_answered = False
     # background image
     quiz.quizimage= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Quiz page.png")
@@ -108,7 +120,7 @@ def quizpage():
     start. place(relx=0.12, rely=0.198, anchor= 'center')
     # progress bar
     global progressbar
-    progressbar = ttk.Progressbar(quiz, orient= HORIZONTAL, length = 1060, mode= 'determinate')
+    progressbar = ttk.Progressbar(quiz,style ="Quiz.Horizontal.TProgressbar", orient= HORIZONTAL, length = 1060, mode= 'determinate')
     progressbar.place(relx=0.5, rely=0.198, anchor= 'center')
     progressbar['value'] = 0
     #finish
@@ -163,12 +175,12 @@ def iterations():
     L_check.config(text = '')
     progressbar['value'] = progressbar['value'] + (100/questions_num)
     global iteration_count
-    L_title.config(text = f'Questions {iteration_count}')
+    L_title.config(text = f'Questions {iteration_count+1}')
     global correct_answer
     correct_answer= ''
     global ranint1
     ranint1 = random.randint(minrange,maxrange)
-    if iteration_count == questions_num:
+    if iteration_count + 1 == questions_num:
         quiz.finish_image = PhotoImage(file= r'SOFTWARE_QUIZ/Chemistry-Quiz/Finish button.png')
         next_button.config(image= quiz.finish_image, command = b_finish)
     if topic.lower() == 'name':
@@ -199,6 +211,7 @@ def iterations():
 #---------------PAGE IF NAME IS TOPIC---------------#
 def name_topic():
     frame1 = Frame(quiz)
+    frame1.place_forget()
     frame1.place(relx=0.5, rely=0.375, anchor= 'center')
     frame1.config(height= 280, width=280, bg= '#2c5570')
     quiz.frame1i= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Frame 1.png")
@@ -212,6 +225,7 @@ def name_topic():
 #---------------PAGE IF SYMBOL IS TOPIC---------------#
 def symbol_topic():
     frame1 = Frame(quiz)
+    frame1.place_forget()
     frame1.place(relx=0.5, rely=0.375, anchor= 'center')   
     frame1.config(height=280, width=750, bg='#2c5570')
     quiz.frame2i= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Frame2.png")
@@ -225,6 +239,7 @@ def symbol_topic():
 #---------------PAGE IF ATOMIC NUM IS TOPIC---------------#
 def atonum_topic():
     frame1 = Frame(quiz)
+    frame1.place_forget()
     frame1.place(relx=0.5, rely=0.375, anchor= 'center')
     frame1.config(height=280, width=750, bg='#2c5570')
     quiz.frame2i= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Frame2.png")
@@ -238,6 +253,7 @@ def atonum_topic():
 #---------------PAGE IF GROUP IS TOPIC---------------#
 def group_topic():
     frame1 = Frame(quiz)
+    frame1.place_forget()
     frame1.place(relx=0.5, rely=0.375, anchor= 'center')
     frame1.config(height=280, width=750, bg='#2c5570')
     quiz.frame2i= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Frame2.png")
@@ -251,6 +267,7 @@ def group_topic():
 #---------------PAGE IF PERIOD IS TOPIC---------------#
 def period_topic():
     frame1 = Frame(quiz)
+    frame1.place_forget()
     frame1.place(relx=0.5, rely=0.375, anchor= 'center')
     frame1.config(height=280, width=750, bg='#2c5570')
     quiz.frame2i= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Frame2.png")
@@ -264,31 +281,104 @@ def period_topic():
 
 #---------------SUBMIT BUTTON---------------#
 def b_submit():
-    global num_correct_answers
-    num_correct_answers = 0
-    global answer
+    global answer, num_correct_answers
     answer = E_quiz.get()
-    if correct_answer.lower() == answer.lower():
+    
+    if str(correct_answer).lower() == str(answer).lower():
         L_check.config(text = f'{nickname} your answer is correct!!!!', foreground = 'green')
         E_quiz.config(foreground='green')
         num_correct_answers += 1
     else:
         L_check.config( text = f'{nickname} your answer is incorrect :(', foreground= 'red')
+        E_quiz.insert(END, f' :The correct answer is {correct_answer}')
         E_quiz.config(foreground='red')
 
 #---------------FINISH PAGE---------------#
 def b_finish():
-    global finishpg
+    global finishpg, L_moderate, L_weak, L_proficient, percent_correct, L_total, L_correct, quit_finish_button, menue_finish_button, scorebar
     finishpg = Toplevel(pg)
     finishpg.attributes('-fullscreen', True)
     finishpg.title('Questions')
     finishpg.lift()
     finishpg.focus_force()
-    finishpg.grab_set
-    quiz.destroy()
-    finishpg.image2= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Chemistry Quiz front page and quiz.png")
+    finishpg.grab_set()
+    finishpg.image2= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/score page.png")
     image2_label = Label(finishpg, image = finishpg.image2,bd=0)
-    image2_label.pack()
+    image2_label.place(relx=0.5, rely=0.5, anchor= 'center')
+    # progress bar
+    style0 = ttk.Style(finishpg)
+    style0.theme_use('default')
+    style0.configure("style0.Horizontal.TProgressbar", thickness = 40, troughcolour = '#ff6666', background = '#a6a6a6' )
+
+    style1 = ttk.Style(finishpg)
+    style1.theme_use('default')
+    style1.configure("style1.Horizontal.TProgressbar", thickness = 40, troughcolour = '#ff6666', background = '#ff5757' )
+
+    style2 = ttk.Style(finishpg)
+    style2.theme_use('default')
+    style2.configure("style2.Horizontal.TProgressbar", thickness = 40, troughcolour = '#ff6666', background = '#ff914d' )
+
+    style3 = ttk.Style(finishpg)
+    style3.theme_use('default')
+    style3.configure("style3.Horizontal.TProgressbar", thickness = 40, troughcolour = '#ff6666', background = '#00bf63' )
+
+    scorebar = ttk.Progressbar(finishpg, style = "style0.Horizontal.TProgressbar", orient= HORIZONTAL, length = 1300, mode= 'determinate')
+    scorebar.place(relx=0.5, rely=0.72, anchor= 'center')  
+        #lable for bar 1
+    L_weak = Label(finishpg, text = 'WEAK', foreground= '#ffffff', bg = '#2c5570',borderwidth=0, highlightthickness=0, font = hangyaboly_20)
+    L_weak.place(relx=0.25, rely=0.67, anchor= 'center')
+        # label for bar 2
+    L_moderate = Label(finishpg, text = 'MODERATE', foreground= '#ffffff', bg = '#2c5570',borderwidth=0, highlightthickness=0, font = hangyaboly_20)
+    L_moderate.place(relx=0.50, rely=0.67, anchor= 'center')
+        # label for bar 3
+    L_proficient = Label(finishpg, text = 'PROFICIENT', foreground= '#ffffff', bg = '#2c5570',borderwidth=0, highlightthickness=0, font = hangyaboly_20)
+    L_proficient.place(relx=0.75, rely=0.67, anchor= 'center')
+
+    # label of num_correct
+    L_correct = Label(finishpg, text = '------', foreground= '#ffffff', bg = '#6796b5',borderwidth=0, highlightthickness=0, font = hangyaboly_90)
+    L_correct.place(relx=0.5, rely=0.30, anchor= 'center')
+    # label of question_num
+    L_total = Label(finishpg, text = '------', foreground= '#ffffff', bg = '#6796b5',borderwidth=0, highlightthickness=0, font = hangyaboly_90)
+    L_total.place(relx=0.5, rely=0.50, anchor= 'center')
+
+    # quit button
+    finishpg.quit_image = PhotoImage(file = r'SOFTWARE_QUIZ/Chemistry-Quiz/quit button_finish.png')
+    quit_finish_button = Button(finishpg, image = finishpg.quit_image, borderwidth =0, highlightthickness =0, command= pg.destroy )
+    quit_finish_button.place(relx= 0.35, rely= 0.84, anchor = 'center') 
+
+    # quit button
+    finishpg.menue_image = PhotoImage(file = r'SOFTWARE_QUIZ/Chemistry-Quiz/menue button_finish.png')
+    menue_finish_button = Button(finishpg, image = finishpg.menue_image, borderwidth =0, highlightthickness =0, command= finishpg.destroy )
+    menue_finish_button.place(relx= 0.65, rely= 0.84, anchor = 'center') 
+
+    percent_correct = (num_correct_answers/questions_num)*100
+    scorebar['value'] = 0
+    quiz.destroy()
+    score_progbar()
+
+def score_progbar():
+    global percent_correct
+    if scorebar['value'] < percent_correct and scorebar['value'] < 100 :
+        scorebar['value'] += 1
+        if 16 <= scorebar['value'] < 17:
+            L_weak.config(foreground= '#ff5757')
+            scorebar.config(style = "style1.Horizontal.TProgressbar")
+        elif 49 <= scorebar['value'] < 50:
+            L_moderate.config(foreground= '#ff914d')
+            scorebar.config(style = "style2.Horizontal.TProgressbar")
+        elif scorebar['value'] == 83:
+            L_weak.config(foreground= '#00bf63')
+            scorebar.config(style = "style3.Horizontal.TProgressbar")
+        finishpg.after(20, score_progbar)
+    else:
+        L_correct.config(text = num_correct_answers)
+        L_total.config(text = questions_num)
+    
+
+
+        
+
+
 #---------------MAIN PAGE---------------#
 # window details
 pg=Tk()
