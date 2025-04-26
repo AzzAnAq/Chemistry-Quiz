@@ -14,10 +14,10 @@ def openplayb():
     playb.lift()
     playb.focus_force()
     #font creation for options entry
-    ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/Hangyaboly.ttf")
+    ctypes.windll.gdi32.AddFontResourceW(r"Fonts/Hangyaboly.ttf")
     hangyaboly_14 = tkFont.Font(family="hangyaboly", size=14)
     # playb page image
-    playb.optionspg= PhotoImage(file = r'SOFTWARE_QUIZ/Chemistry-Quiz/ChemistryQuiz options page.png')
+    playb.optionspg= PhotoImage(file = r'Images/options page.png')
     playb_image = Label(playb, image = playb.optionspg, bd=0)
     playb_image.pack()
     # nickname entry
@@ -37,7 +37,7 @@ def openplayb():
     Etopic = Entry(playb, width = 51, font = hangyaboly_14, borderwidth=0, highlightthickness=0)
     Etopic.place(x=112, y=578)
     # Continue button
-    playb.continue_image = PhotoImage(file = r'SOFTWARE_QUIZ/Chemistry-Quiz/continue button.png')
+    playb.continue_image = PhotoImage(file = r'Images/continue button.png')
     continue_button = Button(playb, command = b_continue, image = playb.continue_image, borderwidth =0, highlightthickness =0 )
     continue_button.place(relx= 0.5, rely= 0.92, anchor = 'center')
     def enter_key(event):
@@ -50,11 +50,11 @@ def openplayb():
     #---------------(continue button)---------------#
 def b_continue():
     global num_correct_answers, nickname, questions_num, maxrange, minrange, topic
-    nickname = Enickname.get().strip()
+    nickname = Enickname.get()
     questions_num_str = Equestions.get().strip()
     topic = Etopic.get().strip().lower()
-    maxrange_str = Emaxrange.get().strip()
-    minrange_str = Eminrange.get().strip()
+    maxrange_str = Emaxrange.get().strip().lower()
+    minrange_str = Eminrange.get().strip().lower()
     valid = True  # validation flag
     # Check for empty fields
     if not nickname or not questions_num_str or not maxrange_str or not minrange_str or not topic:
@@ -67,16 +67,18 @@ def b_continue():
     # Convert ranges and validate
     if valid:
         try:
-            maxrange = int(maxrange_str) - 1
-            minrange = int(minrange_str) - 1
-        except ValueError:
-            messagebox.showerror("Oops!", "Max and Min ranges must be valid integers.")
+            maxrange = ato_num[name_lowered.index(maxrange_str)] - 1
+            minrange = ato_num[name_lowered.index(minrange_str)] - 1
+        except ValueError as e:
+            messagebox.showerror("Oops!", "Highest and lowest elements must be real elements.")
             valid = False
+            print(e)
+
     if valid and maxrange < minrange:
-        messagebox.showerror("Oops!", "Highest atomic number must be larger than the lowest.")
+        messagebox.showerror("Oops!", "Highest element must be farther down the periodic table than the lowest.")
         valid = False
     # Topic validation
-    valid_topics = ['name', 'symbol', 'atomic number', 'group', 'period', 'random']
+    valid_topics = ['name', 'symbol', 'atomic number', 'group', 'period']
     if valid and topic not in valid_topics:
         messagebox.showerror("Oops!", "Please enter a valid topic.")
         valid = False
@@ -86,32 +88,28 @@ def b_continue():
         num_correct_answers = 0
         playb.destroy()
         quizpage()
-
-#---------------ALL ERROR MESSAGES---------------#
-def show_message():
-    messagebox.showerror("Oops!", "error")
    
 #---------------QUIZ PAGE---------------#  
 def quizpage():
     # fonts
     global CaveatBrush_62, hangyaboly_20, hangyaboly_30, hangyaboly_90, hangyaboly_150
-    ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/CaveatBrush-Regular.ttf")
+    ctypes.windll.gdi32.AddFontResourceW(r"Fonts/CaveatBrush-Regular.ttf")
     CaveatBrush_62 = tkFont.Font(family="Caveat Brush", size=70)
 
 
-    ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/Hangyaboly.ttf")
+    ctypes.windll.gdi32.AddFontResourceW(r"Fonts/Hangyaboly.ttf")
     hangyaboly_20 = tkFont.Font(family="hangyaboly", size=20)
 
 
-    ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/Hangyaboly.ttf")
+    ctypes.windll.gdi32.AddFontResourceW(r"Fonts/Hangyaboly.ttf")
     hangyaboly_30 = tkFont.Font(family="hangyaboly", size=30)
 
 
-    ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/Hangyaboly.ttf")
+    ctypes.windll.gdi32.AddFontResourceW(r"Fonts/Hangyaboly.ttf")
     hangyaboly_90 = tkFont.Font(family="hangyaboly", size=90)
 
 
-    ctypes.windll.gdi32.AddFontResourceW(r"SOFTWARE_QUIZ/Chemistry-Quiz/Fonts/Hangyaboly.ttf")
+    ctypes.windll.gdi32.AddFontResourceW(r"Fonts/Hangyaboly.ttf")
     hangyaboly_150 = tkFont.Font(family="hangyaboly", size=150)
 
 
@@ -132,16 +130,15 @@ def quizpage():
     quiz.lift()
     quiz.focus_force()
     quiz.grab_set()
-    quiz.transient(pg)
     F_quiz = Frame(quiz)
     F_quiz.config(height= 1080, width = 1920, bd=10)
     F_quiz.place(relx= 0.5, rely=0.5, anchor = 'center')
     iteration_count = 0
     is_answered = False
     # background image
-    quiz.quizimage= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Quiz page.png")
+    quiz.quizimage= PhotoImage(file=r"Images/Quiz page.png")
     quizimage_label = Label(F_quiz, image = quiz.quizimage,bd=0)
-    quizimage_label.place(relx= 0.5, rely=0.5, anchor = 'center')
+    quizimage_label.pack()
     #start
     start = Label(F_quiz, text = 'Start',bg = '#2c5570',borderwidth=0, highlightthickness=0, foreground='#54bfe3', font= hangyaboly_20)
     start. place(relx=0.15, rely=0.198, anchor= 'center')
@@ -153,15 +150,15 @@ def quizpage():
     finish = Label(F_quiz, text = 'Finish',bg = '#2c5570',borderwidth=0, highlightthickness=0, foreground='#54bfe3', font= hangyaboly_20)
     finish. place(relx=0.85, rely=0.198, anchor= 'center')
     # next button
-    quiz.next_image = PhotoImage(file = r'SOFTWARE_QUIZ/Chemistry-Quiz/Next button.png')
-    next_button = Button(F_quiz, image = quiz.next_image, borderwidth =0, highlightthickness =0, command= iterations )
+    quiz.next_image = PhotoImage(file = r'Images/Next button.png')
+    next_button = Button(F_quiz, image = quiz.next_image, borderwidth =0, highlightthickness =0, command= next_error )
     next_button.place(relx= 0.845, rely= 0.84, anchor = 'center')
     # sumbit button
-    quiz.submit_image = PhotoImage(file = r'SOFTWARE_QUIZ/Chemistry-Quiz/Submit button.png')
+    quiz.submit_image = PhotoImage(file = r'Images/Submit button.png')
     submit_button = Button(F_quiz, image = quiz.submit_image, borderwidth =0, highlightthickness =0, command= b_submit )
     submit_button.place(relx= 0.5, rely= 0.84, anchor = 'center')
     # menu button
-    quiz.menu_image = PhotoImage(file = r'SOFTWARE_QUIZ/Chemistry-Quiz/Menu button.png')
+    quiz.menu_image = PhotoImage(file = r'Images/Menu button.png')
     menu_button = Button(F_quiz, image = quiz.menu_image, borderwidth =0, highlightthickness =0, command= quiz.destroy )
     menu_button.place(relx= 0.155, rely= 0.84, anchor = 'center')
     # label of tile
@@ -178,29 +175,36 @@ def quizpage():
     L_check = Label(F_quiz, text = f'', bg = '#2c5570',borderwidth=0, highlightthickness=0, foreground='#b2ca9a', font= hangyaboly_20)
     L_check.place(relx=0.5, rely=0.765, anchor= 'center')
 
-
     def enter(event=None):
-        global is_answered
+        global is_answered, answer
+        if E_quiz.get == "":
+            messagebox.showerror("Oops!", "Please fill in the entry")
+            return
         if not is_answered:
-            b_submit()  # the function checks the answer
+            submit_button.invoke() # the function checks the answer
             is_answered = True
         else:
-            if iteration_count == questions_num:
-                b_finish()
-            else:
+            if iteration_count< questions_num:
                 iterations()  # Your function to go to the next question
                 is_answered = False
+            elif iteration_count == questions_num:
+                b_finish()
+            else:
+                print('error', ValueError)
     quiz.bind('<Return>', enter)
     iterations()
+
+def next_error():
+    messagebox.showerror("Oops!", "Please  submit answer first")
 #---------------SUBMIT BUTTON---------------#
 def b_submit():
     global answer, num_correct_answers, is_answered
     answer = E_quiz.get()
     is_answered = True
-    if not E_quiz:
+    if answer == "":
         messagebox.showerror("Oops!", "Please fill in the entry")
         return
-    elif str(correct_answer).lower() == str(answer).lower():
+    if str(correct_answer).lower() == str(answer).lower():
         L_check.config(text = f'{nickname} your answer is correct!!!!', foreground = 'green')
         E_quiz.config(foreground='green')
         num_correct_answers += 1
@@ -209,23 +213,27 @@ def b_submit():
         E_quiz.insert(END, f' :The correct answer is {correct_answer}')
         E_quiz.config(foreground='red')
     submit_button.config(command =messgae_submit_done )
+    if iteration_count< questions_num:
+        next_button.config(command= iterations)
+    elif iteration_count == questions_num:
+        next_button.config(command = b_finish)
 
 def messgae_submit_done():
-    messagebox.showerror("Oops!", "Please press Next")
+    messagebox.showerror("Oops!", "Please press next")
 
 
 #---------------PAGES OF QUIZ---------------#
 def iterations():
+    global iteration_count, correct_answer, ranint1, frame1
     L_check.config(text = '')
-
-    progressbar['value'] = progressbar['value'] + (100/questions_num)
-    global iteration_count, correct_answer, ranint1
     L_title.config(text = f'Questions {iteration_count+1}')
     correct_answer= ''
     ranint1 = random.randint(minrange,maxrange)
+    E_quiz.delete(0,END)
+    E_quiz.config(foreground='black')
     if iteration_count + 1 == questions_num:
-        quiz.finish_image = PhotoImage(file= r'SOFTWARE_QUIZ/Chemistry-Quiz/Finish button.png')
-        next_button.config(image= quiz.finish_image, command = b_finish)
+        quiz.finish_image = PhotoImage(file= r'Images/Finish button.png')
+        next_button.config(image= quiz.finish_image)
     if topic.lower() == 'name':
         name_topic()
     elif topic.lower() == 'symbol':
@@ -236,45 +244,31 @@ def iterations():
         group_topic()
     elif topic.lower() == 'period':
         period_topic()
-    elif topic.lower() == 'random':
-        ranint2 = random.randint(1,5)
-        if ranint2 == 1:
-            name_topic()
-        elif ranint2 == 2:
-            symbol_topic()
-        elif ranint2 == 3:
-            atonum_topic()
-        elif ranint2 == 4:
-            group_topic()
-        elif ranint2 == 5:
-            period_topic()
     iteration_count += 1
-    E_quiz.delete(0,END)
-    E_quiz.config(foreground='black')
+    progressbar['value'] = progressbar['value'] + (100/questions_num)
+    
 #---------------PAGE IF NAME IS TOPIC---------------#
 def name_topic():
-    global correct_answer
+    global correct_answer, frame1
     submit_button.config(command =b_submit )
     frame1 = Frame(quiz)
-    frame1.place_forget()
     frame1.place(relx=0.5, rely=0.4, anchor= 'center')
     frame1.config(height= 280, width=280, bg= '#2c5570')
-    quiz.frame1i= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Frame 1.png")
-    fram1i_label = Label(frame1, image = quiz.frame1i,bd=0)
-    fram1i_label.pack()
+    quiz.frame1i= PhotoImage(file=r"Images/Frame 1.png")
+    fram2i_label = Label(frame1, image = quiz.frame1i,bd=0)
+    fram2i_label.pack()
     L_symbol = Label(frame1 ,text= Symbol[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
     L_symbol.place(relx=0.5, rely=0.5, anchor= 'center')
     L_question.config(text = questions[0])
     correct_answer= Name[ranint1]
 #---------------PAGE IF SYMBOL IS TOPIC---------------#
 def symbol_topic():
-    global correct_answer
+    global correct_answer, frame1
     submit_button.config(command =b_submit )
     frame1 = Frame(quiz)
-    frame1.place_forget()
     frame1.place(relx=0.5, rely=0.4, anchor= 'center')  
     frame1.config(height=280, width=750, bg='#2c5570')
-    quiz.frame2i= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Frame2.png")
+    quiz.frame2i= PhotoImage(file=r"Images/Frame2.png")
     fram2i_label = Label(frame1, image = quiz.frame2i,bd=0)
     fram2i_label.pack()
     L_name = Label(frame1 ,text= Name[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
@@ -283,13 +277,12 @@ def symbol_topic():
     correct_answer = Symbol[ranint1]
 #---------------PAGE IF ATOMIC NUM IS TOPIC---------------#
 def atonum_topic():
-    global correct_answer
+    global correct_answer, frame1
     submit_button.config(command =b_submit )
     frame1 = Frame(quiz)
-    frame1.place_forget()
     frame1.place(relx=0.5, rely=0.4, anchor= 'center')
     frame1.config(height=280, width=750, bg='#2c5570')
-    quiz.frame2i= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Frame2.png")
+    quiz.frame2i= PhotoImage(file=r"Images/Frame2.png")
     fram2i_label = Label(frame1, image = quiz.frame2i,bd=0)
     fram2i_label.pack()
     L_name = Label(frame1 ,text= Name[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
@@ -298,28 +291,27 @@ def atonum_topic():
     correct_answer = ato_num[ranint1]
 #---------------PAGE IF GROUP IS TOPIC---------------#
 def group_topic():
-    global correct_answer
+    global correct_answer, frame1
     submit_button.config(command =b_submit )
     frame1 = Frame(quiz)
-    frame1.place_forget()
+    fram2i_label.place_forget()
     frame1.place(relx=0.5, rely=0.4, anchor= 'center')
     frame1.config(height=280, width=750, bg='#2c5570')
-    quiz.frame2i= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Frame2.png")
+    quiz.frame2i= PhotoImage(file=r"Images/Frame2.png")
     fram2i_label = Label(frame1, image = quiz.frame2i,bd=0)
-    fram2i_label.pack()
+    fram2i_label.place(relx=0.5, rely=0.5, anchor= 'center')
     L_name = Label(frame1 ,text= Name[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
     L_name.place(relx=0.5, rely=0.5, anchor= 'center')
     L_question.config(text = questions[3])
     correct_answer = groups[ranint1]
 #---------------PAGE IF PERIOD IS TOPIC---------------#
 def period_topic():
-    global correct_answer
+    global correct_answer, frame1
     submit_button.config(command =b_submit )
     frame1 = Frame(quiz)
-    frame1.place_forget()
     frame1.place(relx=0.5, rely=0.4, anchor= 'center')
     frame1.config(height=280, width=750, bg='#2c5570')
-    quiz.frame2i= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Frame2.png")
+    quiz.frame2i= PhotoImage(file=r"Images/Frame2.png")
     fram2i_label = Label(frame1, image = quiz.frame2i,bd=0)
     fram2i_label.pack()
     L_name = Label(frame1 ,text= Name[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
@@ -344,9 +336,9 @@ def b_finish():
     F_finish.config(height= 1080, width = 1920, bd=10)
     F_finish.place(relx= 0.5, rely=0.5, anchor = 'center')
 
-    finishpg.image2= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/score page.png")
+    finishpg.image2= PhotoImage(file=r"Images/score page.png")
     image2_label = Label(F_finish, image = finishpg.image2,bd=0)
-    image2_label.place(relx=0.5, rely=0.5, anchor= 'center')
+    image2_label.pack()
     # progress bar
     style0 = ttk.Style(finishpg)
     style0.theme_use('default')
@@ -390,13 +382,13 @@ def b_finish():
 
 
     # quit button
-    finishpg.quit_image = PhotoImage(file = r'SOFTWARE_QUIZ/Chemistry-Quiz/quit button_finish.png')
+    finishpg.quit_image = PhotoImage(file = r'Images/quit button_finish.png')
     quit_finish_button = Button(F_finish, image = finishpg.quit_image, borderwidth =0, highlightthickness =0, command= pg.destroy )
     quit_finish_button.place(relx= 0.35, rely= 0.84, anchor = 'center')
 
 
     # quit button
-    finishpg.menue_image = PhotoImage(file = r'SOFTWARE_QUIZ/Chemistry-Quiz/menue button_finish.png')
+    finishpg.menue_image = PhotoImage(file = r'Images/menue button_finish.png')
     menue_finish_button = Button(F_finish, image = finishpg.menue_image, borderwidth =0, highlightthickness =0, command= finishpg.destroy )
     menue_finish_button.place(relx= 0.65, rely= 0.84, anchor = 'center')
 
@@ -418,7 +410,7 @@ def score_progbar():
             L_moderate.config(foreground= '#ff914d')
             scorebar.config(style = "style2.Horizontal.TProgressbar")
         elif scorebar['value'] == 83:
-            L_weak.config(foreground= '#00bf63')
+            L_proficient.config(foreground= '#00bf63')
             scorebar.config(style = "style3.Horizontal.TProgressbar")
         finishpg.after(20, score_progbar)
     else:
@@ -429,7 +421,18 @@ def score_progbar():
 
 
 
-       
+def about_pg():
+    about = Toplevel(pg)
+    about.title('About page')
+    about.geometry('750x750')
+    about.lift()
+    about.focus_force()
+    about.abouti= PhotoImage(file=r"Images/about page.png")
+    L_abouti = Label(about, image = about.abouti,bd=0)
+    L_abouti.place(relx= 0.5, rely=0.5, anchor = 'center')
+    about.close_button_i = PhotoImage(file =r'Images/close button.png')
+    close_button = Button(about, image= about.close_button_i, command = about.destroy, borderwidth=0, highlightthickness=0 )
+    close_button.place(relx= 0.5, rely=0.90, anchor = 'center')
 
 
 
@@ -441,20 +444,20 @@ pg.attributes('-fullscreen', True)
 pg.title('CHEMISTRY QUIZ')
 pg.config(bg = '#2c5570')
 F_mainpage = Frame(pg)
-F_mainpage.config(height= 1080, width = 1920, bd=10)
+F_mainpage.config(height= 1080, width = 1920, highlightbackground= 'white', highlightthickness=10)
 F_mainpage.place(relx= 0.5, rely=0.5, anchor = 'center')
 # main page image
-image1= PhotoImage(file=r"SOFTWARE_QUIZ/Chemistry-Quiz/Chemistry Quiz front page and quiz.png")
+image1= PhotoImage(file=r"Images/menu page.png")
 image1_label = Label(F_mainpage, image = image1,bd=0).pack()
 # play button
-play_image = PhotoImage(file =r'SOFTWARE_QUIZ/Chemistry-Quiz/play button.png')
+play_image = PhotoImage(file =r'Images/play button.png')
 play_button = Button(F_mainpage, image= play_image, command = openplayb, borderwidth=0, highlightthickness=0 ).place(relx= 0.5, rely=0.56, anchor = 'center')
 # quit button
-quit_image = PhotoImage(file = r'SOFTWARE_QUIZ/Chemistry-Quiz/quit button.png')
+quit_image = PhotoImage(file = r'Images/quit button.png')
 quit_button = Button(F_mainpage, image= quit_image, command = pg.destroy, borderwidth=0, highlightthickness=0 ).place(relx= 0.5, rely=0.70, anchor = 'center')
 #about button
-about_image = PhotoImage(file = r'SOFTWARE_QUIZ/Chemistry-Quiz/about button.png')
-about_button = Button(F_mainpage, image= about_image, command = pg.destroy, borderwidth=0, highlightthickness=0 ).place(relx= 0.5, rely=0.825, anchor = 'center')
+about_image = PhotoImage(file = r'Images/about button.png')
+about_button = Button(F_mainpage, image= about_image, command = about_pg, borderwidth=0, highlightthickness=0 ).place(relx= 0.5, rely=0.825, anchor = 'center')
 
 
     #---------------(info lists)---------------#
@@ -488,6 +491,21 @@ Name = [
     'Mendelevium', 'Nobelium', 'Lawrencium', 'Rutherfordium', 'Dubnium', 'Seaborgium', 'Bohrium', 'Hassium', 'Meitnerium', 'Darmstadtium',
     'Roentgenium', 'Copernicium', 'Nihonium', 'Flerovium', 'Moscovium', 'Livermorium', 'Tennessine', 'Oganesson'
 ]
+name_lowered = [
+    'hydrogen', 'helium', 'lithium', 'beryllium', 'boron', 'carbon', 'nitrogen', 'oxygen', 'fluorine', 'neon',
+    'sodium', 'magnesium', 'aluminium', 'silicon', 'phosphorus', 'sulfur', 'chlorine', 'argon', 'potassium', 'calcium',
+    'scandium', 'titanium', 'vanadium', 'chromium', 'manganese', 'iron', 'cobalt', 'nickel', 'copper', 'zinc',
+    'gallium', 'germanium', 'arsenic', 'selenium', 'bromine', 'krypton', 'rubidium', 'strontium', 'yttrium', 'zirconium',
+    'niobium', 'molybdenum', 'technetium', 'ruthenium', 'rhodium', 'palladium', 'silver', 'cadmium', 'indium', 'tin',
+    'antimony', 'tellurium', 'iodine', 'xenon', 'cesium', 'barium', 'lanthanum', 'cerium', 'praseodymium', 'neodymium',
+    'promethium', 'samarium', 'europium', 'gadolinium', 'terbium', 'dysprosium', 'holmium', 'erbium', 'thulium', 'ytterbium',
+    'lutetium', 'hafnium', 'tantalum', 'tungsten', 'rhenium', 'osmium', 'iridium', 'platinum', 'gold', 'mercury',
+    'thallium', 'lead', 'bismuth', 'polonium', 'astatine', 'radon', 'francium', 'radium', 'actinium', 'thorium',
+    'protactinium', 'uranium', 'neptunium', 'plutonium', 'americium', 'curium', 'berkelium', 'californium', 'einsteinium', 'fermium',
+    'mendelevium', 'nobelium', 'lawrencium', 'rutherfordium', 'dubnium', 'seaborgium', 'bohrium', 'hassium', 'meitnerium', 'darmstadtium',
+    'roentgenium', 'copernicium', 'nihonium', 'flerovium', 'moscovium', 'livermorium', 'tennessine', 'oganesson'
+]
+
 Symbol = [
     'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne',
     'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca',
