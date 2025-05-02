@@ -9,7 +9,7 @@ def openplayb():
     # window details
     global playb, hangyaboly_14, Enickname, Equestions, Emaxrange, Eminrange,Etopic, continue_button, play_image
     playb = Toplevel(pg)
-    playb.title('GAME Options')
+    playb.title('Options')
     playb.geometry('750x750')
     playb.lift()
     playb.focus_force()
@@ -21,29 +21,29 @@ def openplayb():
     playb_image = Label(playb, image = playb.optionspg, bd=0)
     playb_image.pack()
     # nickname entry
-    Enickname = Entry(playb, width = 31, font = hangyaboly_14, borderwidth=0, highlightthickness=0)
+    Enickname = Entry(playb, width = 31, font = hangyaboly_14, borderwidth=0, highlightthickness=0, justify='center')
     Enickname.place(x=300, y=130.5)
     Enickname.focus_set()
     # Questions entry
-    Equestions = Entry(playb, width = 17, font = hangyaboly_14, borderwidth=0, highlightthickness=0)
+    Equestions = Entry(playb, width = 17, font = hangyaboly_14, borderwidth=0, highlightthickness=0, justify='center')
     Equestions.place(x=137, y=349.5)
     # Highest Range entry
-    Emaxrange = Entry(playb, width = 9, font = hangyaboly_14, borderwidth=0, highlightthickness=0)
+    Emaxrange = Entry(playb, width = 9, font = hangyaboly_14, borderwidth=0, highlightthickness=0, justify='center')
     Emaxrange.place(x=380, y=349.5)
     # Lowest Range entry
-    Eminrange = Entry(playb, width = 9, font = hangyaboly_14, borderwidth=0, highlightthickness=0)
+    Eminrange = Entry(playb, width = 9, font = hangyaboly_14, borderwidth=0, highlightthickness=0, justify='center')
     Eminrange.place(x=520, y=349.5)
     # Topic entry
-    Etopic = Entry(playb, width = 51, font = hangyaboly_14, borderwidth=0, highlightthickness=0)
+    Etopic = Entry(playb, width = 51, font = hangyaboly_14, borderwidth=0, highlightthickness=0, justify='center')
     Etopic.place(x=112, y=578)
     # Continue button
     playb.continue_image = PhotoImage(file = r'Images/continue button.png')
     continue_button = Button(playb, command = b_continue, image = playb.continue_image, borderwidth =0, highlightthickness =0 )
     continue_button.place(relx= 0.5, rely= 0.92, anchor = 'center')
-    def enter_key(event):
-        b_continue()
    
     playb.bind('<Return>', enter_key)
+def enter_key(event):
+        b_continue()
 
 
 
@@ -61,7 +61,7 @@ def b_continue():
         messagebox.showerror("Oops!", "Please fill in all the required fields.")
         valid = False
     # Check if number of questions is a valid int >= 1
-    elif not questions_num_str.isdigit() or int(questions_num_str) < 1:
+    elif not questions_num_str.isdigit() or int(questions_num_str) <= 1:
         messagebox.showerror("Oops!", "Please enter a valid integer (larger than 1) in the questions section.")
         valid = False
     # Convert ranges and validate
@@ -69,16 +69,14 @@ def b_continue():
         try:
             maxrange = ato_num[name_lowered.index(maxrange_str)] - 1
             minrange = ato_num[name_lowered.index(minrange_str)] - 1
-        except ValueError as e:
+        except ValueError:
             messagebox.showerror("Oops!", "Highest and lowest elements must be real elements.")
             valid = False
-            print(e)
 
     if valid and maxrange < minrange:
         messagebox.showerror("Oops!", "Highest element must be farther down the periodic table than the lowest.")
         valid = False
     # Topic validation
-    valid_topics = ['name', 'symbol', 'atomic number', 'group', 'period']
     if valid and topic not in valid_topics:
         messagebox.showerror("Oops!", "Please enter a valid topic.")
         valid = False
@@ -122,14 +120,12 @@ def quizpage():
 
 
     # window details
-    global quiz, iteration_count, quizimage_label, start, progressbar,finish, next_button, submit_button, menu_button, L_title, L_question, E_quiz, L_check, is_answered
+    global quiz, iteration_count, quizimage_label, start, progressbar,finish, next_button, submit_button, menu_button, L_title, L_question, E_quiz, L_check, is_answered, frame1
     quiz = Toplevel(pg)
     quiz.attributes('-fullscreen', True)
     quiz.title('Questions')
     quiz.config(bg='#2c5570')
     quiz.lift()
-    quiz.focus_force()
-    quiz.grab_set()
     F_quiz = Frame(quiz)
     F_quiz.config(height= 1080, width = 1920, bd=10)
     F_quiz.place(relx= 0.5, rely=0.5, anchor = 'center')
@@ -158,8 +154,8 @@ def quizpage():
     submit_button = Button(F_quiz, image = quiz.submit_image, borderwidth =0, highlightthickness =0, command= b_submit )
     submit_button.place(relx= 0.5, rely= 0.84, anchor = 'center')
     # menu button
-    quiz.menu_image = PhotoImage(file = r'Images/Menu button.png')
-    menu_button = Button(F_quiz, image = quiz.menu_image, borderwidth =0, highlightthickness =0, command= quiz.destroy )
+    quiz.menub_image = PhotoImage(file = r'Images/Menu button.png')
+    menu_button = Button(F_quiz, image = quiz.menub_image, borderwidth =0, highlightthickness =0, command= quiz.destroy )
     menu_button.place(relx= 0.155, rely= 0.84, anchor = 'center')
     # label of tile
     L_title = Label(F_quiz, text = f'Question 1',bg = '#2c5570',borderwidth=0, highlightthickness=0, foreground='#54bfe3', font= CaveatBrush_62)
@@ -174,25 +170,47 @@ def quizpage():
     # label of check (correct/incorrect)
     L_check = Label(F_quiz, text = f'', bg = '#2c5570',borderwidth=0, highlightthickness=0, foreground='#b2ca9a', font= hangyaboly_20)
     L_check.place(relx=0.5, rely=0.765, anchor= 'center')
+    frame1 = Frame(quiz)
+    frame1.place(relx=0.5, rely=0.4, anchor= 'center')
 
-    def enter(event=None):
-        global is_answered, answer
-        if E_quiz.get == "":
-            messagebox.showerror("Oops!", "Please fill in the entry")
-            return
-        if not is_answered:
-            submit_button.invoke() # the function checks the answer
-            is_answered = True
-        else:
-            if iteration_count< questions_num:
-                iterations()  # Your function to go to the next question
-                is_answered = False
-            elif iteration_count == questions_num:
-                b_finish()
-            else:
-                print('error', ValueError)
     quiz.bind('<Return>', enter)
     iterations()
+    check_quiz_exist()
+    
+    quiz.focus_force()
+    quiz.grab_set()
+
+def check_quiz_exist():
+    if not fram2i_label or not frame1:
+        if topic.lower() == 'name':
+            if not L_symbol['text']:
+                quizpage.destroy()
+                quizpage()
+                print('had to close and restart')
+        elif topic.lower() == 'symbol' or topic.lower() == 'atomic number' or topic.lower() == 'period' or topic.lower() == 'group':
+            if not L_name['text']:
+                quizpage.destroy()
+                quizpage()
+                print('had to close and restart')
+
+
+def enter(event=None):
+    global is_answered, answer
+    if E_quiz.get() == "":
+            messagebox.showerror("Oops!", "Please fill in the entry", parent = quiz)
+            return
+    if not is_answered and E_quiz.get() != "":
+            submit_button.invoke() # the function checks the answer
+    elif is_answered and E_quiz.get() != "":
+        if iteration_count< questions_num:
+                iterations()  # Your function to go to the next question
+                is_answered = False
+        elif iteration_count == questions_num:
+                b_finish()
+        else:
+            print('error', ValueError)
+    else:
+        print(ValueError)
 
 def next_error():
     messagebox.showerror("Oops!", "Please  submit answer first")
@@ -219,7 +237,7 @@ def b_submit():
         next_button.config(command = b_finish)
 
 def messgae_submit_done():
-    messagebox.showerror("Oops!", "Please press next")
+    messagebox.showerror("Oops!", "Please press next", parent = quiz)
 
 
 #---------------PAGES OF QUIZ---------------#
@@ -246,56 +264,48 @@ def iterations():
         period_topic()
     iteration_count += 1
     progressbar['value'] = progressbar['value'] + (100/questions_num)
+    next_button.config(command = next_error)
     
 #---------------PAGE IF NAME IS TOPIC---------------#
 def name_topic():
-    global correct_answer, frame1
+    global correct_answer, frame1, fram2i_label, L_symbol
     submit_button.config(command =b_submit )
-    frame1 = Frame(quiz)
-    frame1.place(relx=0.5, rely=0.4, anchor= 'center')
     frame1.config(height= 280, width=280, bg= '#2c5570')
     quiz.frame1i= PhotoImage(file=r"Images/Frame 1.png")
     fram2i_label = Label(frame1, image = quiz.frame1i,bd=0)
-    fram2i_label.pack()
+    fram2i_label.place(relx= 0.5, rely=0.5, anchor = 'center')
     L_symbol = Label(frame1 ,text= Symbol[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
     L_symbol.place(relx=0.5, rely=0.5, anchor= 'center')
     L_question.config(text = questions[0])
     correct_answer= Name[ranint1]
 #---------------PAGE IF SYMBOL IS TOPIC---------------#
 def symbol_topic():
-    global correct_answer, frame1
+    global correct_answer, frame1, fram2i_label, L_name
     submit_button.config(command =b_submit )
-    frame1 = Frame(quiz)
-    frame1.place(relx=0.5, rely=0.4, anchor= 'center')  
     frame1.config(height=280, width=750, bg='#2c5570')
     quiz.frame2i= PhotoImage(file=r"Images/Frame2.png")
     fram2i_label = Label(frame1, image = quiz.frame2i,bd=0)
-    fram2i_label.pack()
+    fram2i_label.place(relx= 0.5, rely=0.5, anchor = 'center')
     L_name = Label(frame1 ,text= Name[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
     L_name.place(relx=0.5, rely=0.5, anchor= 'center')
     L_question.config(text = questions[1])
     correct_answer = Symbol[ranint1]
 #---------------PAGE IF ATOMIC NUM IS TOPIC---------------#
 def atonum_topic():
-    global correct_answer, frame1
+    global correct_answer, frame1, fram2i_label, L_name
     submit_button.config(command =b_submit )
-    frame1 = Frame(quiz)
-    frame1.place(relx=0.5, rely=0.4, anchor= 'center')
     frame1.config(height=280, width=750, bg='#2c5570')
     quiz.frame2i= PhotoImage(file=r"Images/Frame2.png")
     fram2i_label = Label(frame1, image = quiz.frame2i,bd=0)
-    fram2i_label.pack()
+    fram2i_label.place(relx= 0.5, rely=0.5, anchor = 'center')
     L_name = Label(frame1 ,text= Name[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
     L_name.place(relx=0.5, rely=0.5, anchor= 'center')
     L_question.config(text = questions[2])
     correct_answer = ato_num[ranint1]
 #---------------PAGE IF GROUP IS TOPIC---------------#
 def group_topic():
-    global correct_answer, frame1
+    global correct_answer, frame1, fram2i_label, L_name
     submit_button.config(command =b_submit )
-    frame1 = Frame(quiz)
-    fram2i_label.place_forget()
-    frame1.place(relx=0.5, rely=0.4, anchor= 'center')
     frame1.config(height=280, width=750, bg='#2c5570')
     quiz.frame2i= PhotoImage(file=r"Images/Frame2.png")
     fram2i_label = Label(frame1, image = quiz.frame2i,bd=0)
@@ -306,14 +316,12 @@ def group_topic():
     correct_answer = groups[ranint1]
 #---------------PAGE IF PERIOD IS TOPIC---------------#
 def period_topic():
-    global correct_answer, frame1
+    global correct_answer, frame1, fram2i_label, L_name
     submit_button.config(command =b_submit )
-    frame1 = Frame(quiz)
-    frame1.place(relx=0.5, rely=0.4, anchor= 'center')
     frame1.config(height=280, width=750, bg='#2c5570')
     quiz.frame2i= PhotoImage(file=r"Images/Frame2.png")
     fram2i_label = Label(frame1, image = quiz.frame2i,bd=0)
-    fram2i_label.pack()
+    fram2i_label.place(relx= 0.5, rely=0.5, anchor = 'center')
     L_name = Label(frame1 ,text= Name[ranint1], bg='#6796b5',borderwidth=0, highlightthickness=0, foreground= '#b2ca9a', font = hangyaboly_90)
     L_name.place(relx=0.5, rely=0.5, anchor= 'center')
     L_question.config(text = questions[4])
@@ -432,7 +440,7 @@ def about_pg():
     L_abouti.place(relx= 0.5, rely=0.5, anchor = 'center')
     about.close_button_i = PhotoImage(file =r'Images/close button.png')
     close_button = Button(about, image= about.close_button_i, command = about.destroy, borderwidth=0, highlightthickness=0 )
-    close_button.place(relx= 0.5, rely=0.90, anchor = 'center')
+    close_button.place(relx= 0.5, rely=0.92, anchor = 'center')
 
 
 
@@ -458,7 +466,6 @@ quit_button = Button(F_mainpage, image= quit_image, command = pg.destroy, border
 #about button
 about_image = PhotoImage(file = r'Images/about button.png')
 about_button = Button(F_mainpage, image= about_image, command = about_pg, borderwidth=0, highlightthickness=0 ).place(relx= 0.5, rely=0.825, anchor = 'center')
-
 
     #---------------(info lists)---------------#
 ato_num = [
@@ -524,6 +531,7 @@ questions = [
     "What is this element's name?", "What is this element's symbol?", "What is this element's atomic number?",
     "What is this element's group?", "What is this element's period?"
 ]
+valid_topics = ['name', 'symbol', 'atomic number', 'group', 'period']
 pg.mainloop()
 
 
