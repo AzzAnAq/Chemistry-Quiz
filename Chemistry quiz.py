@@ -21,27 +21,38 @@ def openplayb():
     playb_image = Label(playb, image = playb.optionspg, bd=0)
     playb_image.pack()
     # nickname entry
-    Enickname = Entry(playb, width = 31, font = hangyaboly_14, borderwidth=0, highlightthickness=0, justify='center')
+    nickcommand = (pg.register(limit_nickname), '%P')
+    Enickname = Entry(playb, width = 31, font = hangyaboly_14, borderwidth=0, highlightthickness=0, validate = 'key', validatecommand= nickcommand )
     Enickname.place(x=300, y=130.5)
     Enickname.focus_set()
     # Questions entry
-    Equestions = Entry(playb, width = 17, font = hangyaboly_14, borderwidth=0, highlightthickness=0, justify='center')
+    questiocommand = (pg.register(limit_questions), '%P')
+    Equestions = Entry(playb, width = 17, font = hangyaboly_14, borderwidth=0, highlightthickness=0, validate = 'key', validatecommand= questiocommand )
     Equestions.place(x=137, y=349.5)
+    #Range
+    range_topic_command = (pg.register(limit_range_topic), '%P')
     # Highest Range entry
-    Emaxrange = Entry(playb, width = 9, font = hangyaboly_14, borderwidth=0, highlightthickness=0, justify='center')
+    Emaxrange = Entry(playb, width = 9, font = hangyaboly_14, borderwidth=0, highlightthickness=0, validate = 'key', validatecommand= range_topic_command )
     Emaxrange.place(x=380, y=349.5)
     # Lowest Range entry
-    Eminrange = Entry(playb, width = 9, font = hangyaboly_14, borderwidth=0, highlightthickness=0, justify='center')
+    Eminrange = Entry(playb, width = 9, font = hangyaboly_14, borderwidth=0, highlightthickness=0, validate = 'key', validatecommand= range_topic_command )
     Eminrange.place(x=520, y=349.5)
     # Topic entry
-    Etopic = Entry(playb, width = 51, font = hangyaboly_14, borderwidth=0, highlightthickness=0, justify='center')
+    Etopic = Entry(playb, width = 51, font = hangyaboly_14, borderwidth=0, highlightthickness=0, validate = 'key', validatecommand= range_topic_command)
     Etopic.place(x=112, y=578)
     # Continue button
     playb.continue_image = PhotoImage(file = r'Images/continue button.png')
     continue_button = Button(playb, command = b_continue, image = playb.continue_image, borderwidth =0, highlightthickness =0 )
     continue_button.place(relx= 0.5, rely= 0.92, anchor = 'center')
-   
     playb.bind('<Return>', enter_key)
+#----limits to charecter input in entries----#
+def limit_nickname(val):
+    return len(val) <= 34
+def limit_questions(val1):
+    return len(val1) <= 17
+def limit_range_topic(val2):
+    return len(val2) <= 13
+#------Enter key bind-------#
 def enter_key(event):
         b_continue()
 
@@ -67,8 +78,8 @@ def b_continue():
     # Convert ranges and validate
     if valid:
         try:
-            maxrange = ato_num[name_lowered.index(maxrange_str)] - 1
-            minrange = ato_num[name_lowered.index(minrange_str)] - 1
+            maxrange = name_lowered.index(maxrange_str)
+            minrange = name_lowered.index(minrange_str)
         except ValueError:
             messagebox.showerror("Oops!", "Highest and lowest elements must be real elements.")
             valid = False
@@ -86,11 +97,12 @@ def b_continue():
         num_correct_answers = 0
         playb.destroy()
         quizpage()
+
    
 #---------------QUIZ PAGE---------------#  
 def quizpage():
     # fonts
-    global CaveatBrush_62, hangyaboly_20, hangyaboly_30, hangyaboly_90, hangyaboly_150
+    global CaveatBrush_62, hangyaboly_20, hangyaboly_30, hangyaboly_90, quiz, iteration_count, quizimage_label, start, progressbar,finish, next_button, submit_button, menu_button, L_title, L_question, E_quiz, L_check, is_answered, frame1
     ctypes.windll.gdi32.AddFontResourceW(r"Fonts/CaveatBrush-Regular.ttf")
     CaveatBrush_62 = tkFont.Font(family="Caveat Brush", size=70)
 
@@ -107,10 +119,6 @@ def quizpage():
     hangyaboly_90 = tkFont.Font(family="hangyaboly", size=90)
 
 
-    ctypes.windll.gdi32.AddFontResourceW(r"Fonts/Hangyaboly.ttf")
-    hangyaboly_150 = tkFont.Font(family="hangyaboly", size=150)
-
-
     #styles
     quiz_style = ttk.Style()
     quiz_style.theme_use('default')
@@ -120,7 +128,6 @@ def quizpage():
 
 
     # window details
-    global quiz, iteration_count, quizimage_label, start, progressbar,finish, next_button, submit_button, menu_button, L_title, L_question, E_quiz, L_check, is_answered, frame1
     quiz = Toplevel(pg)
     quiz.attributes('-fullscreen', True)
     quiz.title('Questions')
@@ -175,35 +182,43 @@ def quizpage():
 
     quiz.bind('<Return>', enter)
     iterations()
-    check_quiz_exist()
     
-    quiz.focus_force()
-    quiz.grab_set()
+    E_quiz.focus_set()
 
-def check_quiz_exist():
-    if not fram2i_label or not frame1:
-        if topic.lower() == 'name':
-            if not L_symbol['text']:
-                quizpage.destroy()
-                quizpage()
-                print('had to close and restart')
-        elif topic.lower() == 'symbol' or topic.lower() == 'atomic number' or topic.lower() == 'period' or topic.lower() == 'group':
-            if not L_name['text']:
-                quizpage.destroy()
-                quizpage()
-                print('had to close and restart')
+#---------------SUBMIT BUTTON---------------#
+def b_submit():
+    global num_correct_answers, is_answered
+    answer = E_quiz.get()
+    is_answered = True
+    if answer == "":
+        messagebox.showerror("Oops!", "Please fill in the entry", parent = quiz)
+        return
+    if str(correct_answer).lower() == str(answer).lower():
+        L_check.config(text = f'{nickname} your answer is correct 😀', foreground = 'green')
+        E_quiz.config(foreground='green')
+        num_correct_answers += 1
+    else:
+        L_check.config( text = f'{nickname} your answer is incorrect 🙁', foreground= 'red')
+        E_quiz.insert(END, f' :The correct answer is {correct_answer}')
+        E_quiz.config(foreground='red')
+    submit_button.config(command =messgae_submit_done )
+    if iteration_count< questions_num:
+        next_button.config(command= iterations)
+    elif iteration_count == questions_num:
+        next_button.config(command = b_finish)
 
 
 def enter(event=None):
-    global is_answered, answer
-    if E_quiz.get() == "":
+    global is_answered
+    answer =E_quiz.get()
+    if answer == "":
             messagebox.showerror("Oops!", "Please fill in the entry", parent = quiz)
             return
-    if not is_answered and E_quiz.get() != "":
-            submit_button.invoke() # the function checks the answer
-    elif is_answered and E_quiz.get() != "":
+    if not is_answered and answer != "":
+            b_submit() # the function checks the answer
+    elif is_answered and answer != "":
         if iteration_count< questions_num:
-                iterations()  # Your function to go to the next question
+                iterations()  # the function to go to the next question
                 is_answered = False
         elif iteration_count == questions_num:
                 b_finish()
@@ -213,28 +228,7 @@ def enter(event=None):
         print(ValueError)
 
 def next_error():
-    messagebox.showerror("Oops!", "Please  submit answer first")
-#---------------SUBMIT BUTTON---------------#
-def b_submit():
-    global answer, num_correct_answers, is_answered
-    answer = E_quiz.get()
-    is_answered = True
-    if answer == "":
-        messagebox.showerror("Oops!", "Please fill in the entry")
-        return
-    if str(correct_answer).lower() == str(answer).lower():
-        L_check.config(text = f'{nickname} your answer is correct!!!!', foreground = 'green')
-        E_quiz.config(foreground='green')
-        num_correct_answers += 1
-    else:
-        L_check.config( text = f'{nickname} your answer is incorrect :(', foreground= 'red')
-        E_quiz.insert(END, f' :The correct answer is {correct_answer}')
-        E_quiz.config(foreground='red')
-    submit_button.config(command =messgae_submit_done )
-    if iteration_count< questions_num:
-        next_button.config(command= iterations)
-    elif iteration_count == questions_num:
-        next_button.config(command = b_finish)
+    messagebox.showerror("Oops!", "Please  submit answer first", parent = quiz)
 
 def messgae_submit_done():
     messagebox.showerror("Oops!", "Please press next", parent = quiz)
@@ -252,19 +246,20 @@ def iterations():
     if iteration_count + 1 == questions_num:
         quiz.finish_image = PhotoImage(file= r'Images/Finish button.png')
         next_button.config(image= quiz.finish_image)
-    if topic.lower() == 'name':
+    if topic == 'name':
         name_topic()
-    elif topic.lower() == 'symbol':
+    elif topic == 'symbol':
         symbol_topic()
-    elif topic.lower() == 'atomic number':
+    elif topic == 'atomic number':
         atonum_topic()
-    elif topic.lower() == 'group':
+    elif topic == 'group':
         group_topic()
-    elif topic.lower() == 'period':
+    elif topic == 'period':
         period_topic()
     iteration_count += 1
     progressbar['value'] = progressbar['value'] + (100/questions_num)
     next_button.config(command = next_error)
+    check_quiz_exist()
     
 #---------------PAGE IF NAME IS TOPIC---------------#
 def name_topic():
@@ -328,18 +323,30 @@ def period_topic():
     correct_answer = periods[ranint1]
 
 
-
+def check_quiz_exist():
+    if not fram2i_label or not frame1:
+        if topic == 'name':
+            if not L_symbol['text']:
+                quizpage.destroy()
+                quizpage()
+                print('had to close and restart')
+        elif topic == 'symbol' or topic == 'atomic number' or topic == 'period' or topic == 'group':
+            if not L_name['text']:
+                quizpage.destroy()
+                quizpage()
+                print('had to close and restart')
 
 #---------------FINISH PAGE---------------#
 def b_finish():
     global finishpg, L_moderate, L_weak, L_proficient, percent_correct, L_total, L_correct, quit_finish_button, menue_finish_button, scorebar
     finishpg = Toplevel(pg)
     finishpg.attributes('-fullscreen', True)
-    finishpg.title('Questions')
+    finishpg.title('Score')
     finishpg.lift()
     finishpg.focus_force()
     finishpg.grab_set()
     finishpg.config(bg = '#2c5570')
+    quiz.destroy()
     F_finish = Frame(finishpg)
     F_finish.config(height= 1080, width = 1920, bd=10)
     F_finish.place(relx= 0.5, rely=0.5, anchor = 'center')
@@ -403,7 +410,6 @@ def b_finish():
 
     percent_correct = (num_correct_answers/questions_num)*100
     scorebar['value'] = 0
-    quiz.destroy()
     score_progbar()
 
 
@@ -459,13 +465,13 @@ image1= PhotoImage(file=r"Images/menu page.png")
 image1_label = Label(F_mainpage, image = image1,bd=0).pack()
 # play button
 play_image = PhotoImage(file =r'Images/play button.png')
-play_button = Button(F_mainpage, image= play_image, command = openplayb, borderwidth=0, highlightthickness=0 ).place(relx= 0.5, rely=0.56, anchor = 'center')
+play_button = Button(F_mainpage, image= play_image, command = openplayb, borderwidth=0, highlightthickness=0 ).place(relx= 0.5, rely=0.515, anchor = 'center')
 # quit button
 quit_image = PhotoImage(file = r'Images/quit button.png')
-quit_button = Button(F_mainpage, image= quit_image, command = pg.destroy, borderwidth=0, highlightthickness=0 ).place(relx= 0.5, rely=0.70, anchor = 'center')
+quit_button = Button(F_mainpage, image= quit_image, command = pg.destroy, borderwidth=0, highlightthickness=0 ).place(relx= 0.5, rely=0.66, anchor = 'center')
 #about button
 about_image = PhotoImage(file = r'Images/about button.png')
-about_button = Button(F_mainpage, image= about_image, command = about_pg, borderwidth=0, highlightthickness=0 ).place(relx= 0.5, rely=0.825, anchor = 'center')
+about_button = Button(F_mainpage, image= about_image, command = about_pg, borderwidth=0, highlightthickness=0 ).place(relx= 0.5, rely=0.79, anchor = 'center')
 
     #---------------(info lists)---------------#
 ato_num = [
