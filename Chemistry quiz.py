@@ -4,6 +4,7 @@ import tkinter.font as tkFont
 from tkinter import messagebox
 import random
 from tkinter import ttk
+import sys
 #---------------PLAY BUTTON PAGE---------------#
 def openplayb():
     # window details
@@ -47,7 +48,7 @@ def openplayb():
     playb.bind('<Return>', enter_key)
 #----limits to charecter input in entries----#
 def limit_nickname(val):
-    return len(val) <= 34
+    return len(val) <= 34, 
 def limit_questions(val1):
     return len(val1) <= 17
 def limit_range_topic(val2):
@@ -55,6 +56,7 @@ def limit_range_topic(val2):
 #------Enter key bind-------#
 def enter_key(event):
         b_continue()
+        
 
 
 
@@ -67,6 +69,7 @@ def b_continue():
     maxrange_str = Emaxrange.get().strip().lower()
     minrange_str = Eminrange.get().strip().lower()
     valid = True  # validation flag
+    num_correct_answers = 0
     # Check for empty fields
     if not nickname or not questions_num_str or not maxrange_str or not minrange_str or not topic:
         messagebox.showerror("Oops!", "Please fill in all the required fields.")
@@ -94,9 +97,8 @@ def b_continue():
     # If everything is valid, start the quiz
     if valid:
         questions_num = int(questions_num_str)
-        num_correct_answers = 0
-        playb.destroy()
         quizpage()
+    playb.destroy()
 
    
 #---------------QUIZ PAGE---------------#  
@@ -193,7 +195,7 @@ def b_submit():
     if answer == "":
         messagebox.showerror("Oops!", "Please fill in the entry", parent = quiz)
         return
-    if str(correct_answer).lower() == str(answer).lower():
+    if str(correct_answer).lower() == answer.lower():
         L_check.config(text = f'{nickname} your answer is correct 😀', foreground = 'green')
         E_quiz.config(foreground='green')
         num_correct_answers += 1
@@ -222,13 +224,11 @@ def enter(event=None):
                 is_answered = False
         elif iteration_count == questions_num:
                 b_finish()
-        else:
-            print('error', ValueError)
-    else:
-        print(ValueError)
 
 def next_error():
+    global is_answered
     messagebox.showerror("Oops!", "Please  submit answer first", parent = quiz)
+    is_answered = False
 
 def messgae_submit_done():
     messagebox.showerror("Oops!", "Please press next", parent = quiz)
@@ -236,13 +236,13 @@ def messgae_submit_done():
 
 #---------------PAGES OF QUIZ---------------#
 def iterations():
-    global iteration_count, correct_answer, ranint1, frame1
+    global iteration_count, correct_answer, ranint1, frame1, is_answered
     L_check.config(text = '')
     L_title.config(text = f'Questions {iteration_count+1}')
-    correct_answer= ''
-    ranint1 = random.randint(minrange,maxrange)
     E_quiz.delete(0,END)
     E_quiz.config(foreground='black')
+    correct_answer= ''
+    ranint1 = random.randint(minrange,maxrange)
     if iteration_count + 1 == questions_num:
         quiz.finish_image = PhotoImage(file= r'Images/Finish button.png')
         next_button.config(image= quiz.finish_image)
@@ -259,6 +259,7 @@ def iterations():
     iteration_count += 1
     progressbar['value'] = progressbar['value'] + (100/questions_num)
     next_button.config(command = next_error)
+    is_answered = False
     check_quiz_exist()
     
 #---------------PAGE IF NAME IS TOPIC---------------#
@@ -325,16 +326,10 @@ def period_topic():
 
 def check_quiz_exist():
     if not fram2i_label or not frame1:
-        if topic == 'name':
-            if not L_symbol['text']:
-                quizpage.destroy()
-                quizpage()
-                print('had to close and restart')
-        elif topic == 'symbol' or topic == 'atomic number' or topic == 'period' or topic == 'group':
-            if not L_name['text']:
-                quizpage.destroy()
-                quizpage()
-                print('had to close and restart')
+        if not L_symbol['text']:
+            quizpage.destroy()
+            quizpage()
+            print('had to close and restart')
 
 #---------------FINISH PAGE---------------#
 def b_finish():
@@ -346,7 +341,6 @@ def b_finish():
     finishpg.focus_force()
     finishpg.grab_set()
     finishpg.config(bg = '#2c5570')
-    quiz.destroy()
     F_finish = Frame(finishpg)
     F_finish.config(height= 1080, width = 1920, bd=10)
     F_finish.place(relx= 0.5, rely=0.5, anchor = 'center')
@@ -408,8 +402,9 @@ def b_finish():
     menue_finish_button.place(relx= 0.65, rely= 0.84, anchor = 'center')
 
 
-    percent_correct = (num_correct_answers/questions_num)*100
+    percent_correct = float((num_correct_answers/questions_num)*100)
     scorebar['value'] = 0
+    quiz.destroy()
     score_progbar()
 
 
@@ -472,8 +467,8 @@ quit_button = Button(F_mainpage, image= quit_image, command = pg.destroy, border
 #about button
 about_image = PhotoImage(file = r'Images/about button.png')
 about_button = Button(F_mainpage, image= about_image, command = about_pg, borderwidth=0, highlightthickness=0 ).place(relx= 0.5, rely=0.79, anchor = 'center')
-
-    #---------------(info lists)---------------#
+#-----------Lists-----------#  
+    #---------------(periodic table lists)-------------#
 ato_num = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
     43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82,
@@ -533,11 +528,17 @@ Symbol = [
     'Md', 'No', 'Lr', 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds',
     'Rg', 'Cn', 'Nh', 'Fl', 'Mc', 'Lv', 'Ts', 'Og'
 ]
+    #--------Extra lists---------#
 questions = [
     "What is this element's name?", "What is this element's symbol?", "What is this element's atomic number?",
     "What is this element's group?", "What is this element's period?"
 ]
 valid_topics = ['name', 'symbol', 'atomic number', 'group', 'period']
+
+
+
+
+
 pg.mainloop()
 
 
